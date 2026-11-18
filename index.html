@@ -212,49 +212,55 @@ var IMG={cdw:"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBAUEBAY
 var CATS=[["all","전체"],["ai","AI"],["cloud","클라우드"],["data","데이터"],["team","협업·기획"]];
 var TABS=[["all","전체"],["project","프로젝트"],["career","경력·교육"],["award","수상·논문"]];
 var ITEMS=[
-{id:"cdw",nm:"연쇄 지연 워치",ds:"인천공항 출발편 지연이 같은 기체의 다음 편으로 번지는지 보여 주는 대시보드",dt:"2026.11",kind:"project",cats:["data","cloud"],img:"cdw",
- meta:"개인 프로젝트, 2026.11. JavaScript, Node.js 서버리스 함수, Vercel(서울 리전), GitHub Actions",
- body:'<p>한 편이 늦으면 같은 기체로 이어지는 다음 편도 늦게 됩니다. 지금 인천공항에서 늦은 편 중 얼마가 앞 편에서 지연을 넘겨받았는지 실제 운항 자료로 보여 주려고 만들었습니다.</p>'+
- '<div><h3>데이터</h3><ul><li>인천국제공항공사 운항 현황, 한국공항공사 14개 공항 출발편·노선별 소요시간(공공데이터포털)</li><li>ADS-B 항공기 실시간 위치, 인천공항 METAR·TAF 기상 관측</li></ul></div>'+
- '<div><h3>제가 한 일</h3><ul><li>외부 API 6종을 서버리스 중계 함수로 감싸 인증키를 브라우저에 노출하지 않게 함</li><li>ADS-B 소스 세 곳에 동시에 요청하고, 실패하면 요청 제한 안에서 순서대로 재시도</li><li>공공데이터 인증키 인코딩 오류를 진단 모드로 원인을 좁혀 해결</li><li>GitHub Actions로 하루 두 번 전날 운항·기상 자료를 별도 브랜치에 쌓아 예측 모델 학습용 데이터 확보</li></ul></div>'+
- '<div><h3>아직 남은 것</h3><p>남은 편의 예상 지연은 학습한 모델이 아니라 앞 편 도착 시각에 최소 지상 시간 50분을 더한 단순 계산입니다. 쌓고 있는 자료로 모델을 학습해 바꾸는 것이 다음 단계입니다. 대시보드는 혼자 만들었고, 이후 SeSAC 과정의 팀 최종 프로젝트 주제로 선정됐습니다.</p></div>',
- links:[["사이트","https://flight.kimchaeyeon.dev/airport"],["GitHub 저장소","https://github.com/k1mchaeyeon/icn-flight-delay-watch"]]},
-{id:"rag",nm:"한국어 문서 Q&A 검색",ds:"RAG 검색 단계를 직접 만들고 BM25·벡터·하이브리드를 숫자로 비교",dt:"2026.11",kind:"project",cats:["ai","data"],img:"rag",
- meta:"개인 프로젝트, 2026.11. Python, Qdrant, BM25, multilingual-e5-small, Streamlit",
- body:'<p>LogiIQ의 AI 캐릭터가 프로젝트 정보를 모른 채 엉뚱하게 답할 때가 있었습니다. 답을 만들기 전에 근거 문서를 찾아 붙이는 RAG가 해법이라고 보고, 결과를 가장 크게 좌우하는 검색 단계를 직접 만들어 확인했습니다.</p>'+
- '<div><h3>구조</h3><p>KorQuAD 1.0 위키 문서 140편을 300·600·1000자 청크(20% 겹침)로 나누고, BM25 색인과 e5 임베딩 + Qdrant 벡터 검색을 만든 뒤 두 순위를 RRF로 합쳤습니다. 질문 500개로 Hit@1, Hit@5, MRR@10, 검색 시간을 쟀습니다.</p></div>'+
- '<div class="d-nums"><div><strong>0.986</strong><span>BM25 1000자 Hit@5</span></div><div><strong>0.772 → 0.924</strong><span>벡터 검색 Hit@5, 해시 기준선 → e5</span></div></div>'+
- '<div><h3>예상과 달랐던 점</h3><p>AI 임베딩을 쓰면 당연히 좋아질 거라 봤지만, 이 데이터에서는 모든 조합에서 BM25가 가장 높았습니다. 질문이 위키 문장을 보고 만들어져 단어가 많이 겹치기 때문입니다. 검색 방식은 데이터를 보고 숫자로 골라야 한다는 걸 확인했고, 다르게 바꿔 쓴 질문으로 다시 실험하는 것이 다음 단계입니다.</p></div>',
+{id:"rag",nm:"RAG 검색 파이프라인 구축 및 검색 품질 평가",ds:"청킹·임베딩·벡터 DB·하이브리드 검색을 직접 만들고 Hit@k·MRR로 비교",dt:"2026.11",kind:"project",cats:["ai","data"],img:"rag",
+ meta:"개인 프로젝트, 2026.11 · 강조 구간: 검색기와 검색 품질 평가 (RAG의 검색 단계만 다룸, 생성 단계는 다음 단계)",
+ body:'<table><tbody><tr><th>담당 범위</th><td>데이터 준비 · 청킹 · 임베딩 · 벡터 DB 적재 · BM25/벡터/하이브리드 검색기 · 평가 설계 (전부 혼자)</td></tr><tr><th>기술</th><td>Python, Qdrant(코사인 거리), BM25, multilingual-e5-small, RRF, Streamlit, KorQuAD 1.0</td></tr></tbody></table>'+
+ '<div><h3>목표</h3><p>LogiIQ의 AI 캐릭터가 근거 없이 엉뚱하게 답하던 문제에서 출발했습니다. 답을 만들기 전에 근거 문단을 찾아 주는 검색 단계가 질문 500개 중 정답 문단을 상위 5개 안에 얼마나 넣는지(Hit@5)를 기준으로 가장 나은 청크 크기와 검색 방식을 고르는 것이 목표였습니다.</p></div>'+
+ '<div><h3>수행</h3><ul><li>KorQuAD 1.0 dev를 문서 140편(약 52만 자)과 평가 질문 500개로 정리하고, 정답의 문서 내 위치를 저장</li><li>문장 끝에서 끊는 청크 분할(300·600·1000자, 앞 청크와 20% 겹침)</li><li>e5 임베딩(query:/passage: 접두어) → Qdrant 적재, BM25(글자 2개 단위), 두 순위를 RRF로 합치는 하이브리드</li><li>청크 크기 × 검색 방식 9개 조합별 Hit@1 · Hit@5 · MRR@10 · 질문당 검색 시간 측정</li></ul></div>'+
+ '<div><h3>문제 → 개선</h3><p>글자 n-gram 해시로 만든 벡터 검색 기준선은 Hit@5 0.772에 그쳤습니다. 의미를 담는 e5 임베딩으로 바꾸자 0.924로 올랐고, BM25와 RRF로 합친 하이브리드는 0.976까지 올랐습니다(600자 기준).</p></div>'+
+ '<div class="d-nums"><div><strong>0.772 → 0.976</strong><span>Hit@5, 해시 벡터 → e5 하이브리드</span></div><div><strong>0.936</strong><span>최고 MRR@10 (BM25 · 1000자)</span></div><div><strong>1.2ms</strong><span>질문당 검색 시간 (BM25 · 1000자)</span></div></div>'+
+ '<div><h3>결과와 다음 단계</h3><p>이 데이터에서는 BM25가 모든 조합에서 가장 높았습니다. 질문이 위키 문장을 보고 만들어져 문서와 단어가 많이 겹치기 때문입니다. 검색 방식은 데이터를 보고 숫자로 골라야 한다는 것을 확인했습니다. 하이브리드 가중치 조정, 재정렬(re-ranker), 다르게 바꿔 쓴 질문 세트 재실험, 생성 단계 연결은 다음 단계입니다.</p></div>',
  links:[["GitHub 저장소","https://github.com/k1mchaeyeon/korean-rag-retrieval-benchmark"]]},
-{id:"logiiq",nm:"LogiIQ",ds:"YOLOv8 감지를 붙인 3D 물류 교육 플랫폼",dt:"2025.06",kind:"project",cats:["ai","team"],img:"logiiq",
- meta:"졸업작품, 2024.09 – 2025.06, 4명. 일정 관리와 기획·개발·디자인 파트 조율",
- body:'<p>글과 영상으로는 익히기 어려운 물류 공정을, 웹에서 바로 실행되는 3D 물류센터 안에서 직접 해 보며 익히게 하려고 만들었습니다.</p>'+
- '<div><h3>구조</h3><p>Unity WebGL 3D 시뮬레이션, Python YOLOv8 객체 감지, GPT 기반 AI 캐릭터, React·Spring Boot 학습 대시보드를 하나로 연동했습니다. <span class="mine">세 부분을 잇는 데이터 연동 구조를 제가 설계했습니다.</span></p></div>'+
- '<div><h3>제가 한 일</h3><ul><li>YOLOv8 학습 데이터 약 1만 5천 장 라벨링·증강, 모델 학습</li><li>A* 경로 탐색에 YOLO 장애물 감지를 더한 AGV 자율주행</li><li>미션 진행 UI, 미니맵, 프로세스 바, 지게차·AGV·분류기 동작 시각화</li><li>Figma로 대시보드·시뮬레이션 UI 디자인, Jira·Notion 이슈 관리</li><li>차량 Collider 충돌 오류를 Rigidbody 속성 조정으로 해결</li></ul></div>'+
- '<div><h3>방향을 바꾼 지점</h3><p>처음에는 VR로 시작했지만 팀 모두 VR 개발이 처음이라 구현에 시간이 몰리고 교육 내용은 손대지 못했습니다. 목표는 초보자의 공정 이해이고 VR은 수단이라고 보고 웹 3D로 바꿨고, 아낀 시간은 YOLO 감지와 AI 캐릭터에 썼습니다.</p></div>'+
- '<div class="d-nums"><div><strong>42 → 85점</strong><span>초보 학습자 5명 평균 점수</span></div><div><strong>100%</strong><span>사용자 테스트 작업 성공률</span></div></div>',
- links:[["시연 영상","https://youtu.be/GlBnGxDe_Iw"]]},
-{id:"assac",nm:"ASSAC",ds:"AWS 3-Tier 운영 환경, 엣지·보안과 차단 알림 담당",dt:"2026.10",kind:"project",cats:["cloud","team"],img:"assac",
- meta:"SeSAC 중간 프로젝트, 2026.09 – 2026.10, 5명. Route 53, CloudFront, WAF, 알림 Lambda 담당",
- body:'<p>동물병원 진료 관리 서비스(Spring PetClinic)를 AWS에서 멈추지 않고 운영할 수 있게 만든 팀 프로젝트입니다.</p>'+
- '<div><h3>요청 흐름</h3><p>사용자 → <span class="mine">Route 53 → CloudFront + WAF</span> → 외부 ALB → Apache → 내부 ALB → PetClinic → RDS MySQL(Multi-AZ)</p></div>'+
- '<div><h3>제가 한 일</h3><ul><li>assac.cloud 도메인을 CloudFront로 연결, ACM 인증서로 원본까지 HTTPS</li><li>WAF 관리형 규칙(일반 웹 공격, SQL Injection)과 IP당 5분 1,000건 요청 제한, 초과 시 직접 만든 429 안내 페이지</li><li>외부 ALB는 CloudFront 전용 IP만 허용해 우회 접근 차단</li><li>WAF 차단 로그 → CloudWatch Logs 구독 필터 → Lambda(IP·국가·경로 추출) → Discord 알림</li></ul></div>'+
- '<div><h3>팀 결과</h3><table><tbody><tr><th>부하 테스트</th><td>시간당 최대 18,735건, p99 513ms 유지</td></tr><tr><th>정적 캐싱</th><td>캐시 적중 0.03%에서 경로별 정책 적용 후 두 번째 요청부터 캐시 응답</td></tr><tr><th>무중단 배포</th><td>서버 절반 이상을 유지하며 한 대씩 교체</td></tr><tr><th>최종 발표</th><td>과정 내 4팀 중 1위</td></tr></tbody></table></div>'+
- '<div><h3>남은 질문</h3><p>알림은 자동으로 오지만, 그게 실제 공격인지 정상 사용자가 몰린 것인지는 결국 사람이 로그를 열어 판단해야 했습니다. 운영 로그를 AI로 먼저 해석하는 방법을 더 공부하고 싶은 이유입니다.</p></div>',
- links:[["사이트","https://assac.kimchaeyeon.dev"],["인프라 지도","https://notes.kimchaeyeon.dev/assac-infra-map/"]]},
-{id:"seoul",nm:"서울 20·30대 순이동 분석",ds:"'청년'으로 묶으면 가려지는 것을 공공 데이터로 확인",dt:"2026.08",kind:"project",cats:["data"],img:"seoul1",
- meta:"개인 프로젝트. Python, pandas, matplotlib, Streamlit",
- body:'<p>한 기사는 30대 순유출이 가장 많다고, 다른 자료는 2030이 서울로 들어오고 있다고 했습니다. 연령대를 나눠 보면 이 차이가 설명될 거라고 보고 2021~2024년 공공 데이터 5종을 모았습니다.</p>'+
- '<div class="d-nums"><div><strong>+36,561명</strong><span>2024년 20대 순유입</span></div><div><strong>−26,224명</strong><span>2024년 30대 순유출</span></div><div><strong>+10,337명</strong><span>둘을 합치면 보이는 숫자</span></div></div>'+
- '<div><h3>데이터를 맞춘 방법</h3><ul><li>구마다 인구가 달라 인구 1,000명당 순이동률로 계산</li><li>월세를 보증금 + 월세×12÷0.05로 전세 환산해 자치구 중앙값 사용</li><li>사업체 종사자수만으로는 주민 고용 상태를 알 수 없어 거주지 고용률을 참고지표로 추가</li></ul></div>'+
- '<div><h3>세 가지 예상과 결과</h3><table><tbody><tr><th>20대와 30대는 방향이 다를 것</th><td>지지. 18개 구에서 20대 유입, 30대 유출</td></tr><tr><th>주거비가 높은 구일수록 30대 순이동률이 낮을 것</th><td>지지되지 않음. 예상과 반대 방향(r = 0.62)</td></tr><tr><th>고용 여건이 좋을수록 20대 순이동률이 높을 것</th><td>부분 지지(r = 0.62)</td></tr></tbody></table><p style="color:var(--muted);font-size:13px;margin-top:6px">상관관계는 개인의 이사 원인을 뜻하지 않는다는 한계도 함께 정리했습니다.</p></div>',
+{id:"cdw",nm:"외부 API 5종 연동 실시간 데이터 수집 파이프라인",ds:"연쇄 지연 워치: 인천공항 지연이 같은 기체의 다음 편으로 번지는지 보여 주는 대시보드",dt:"2026.11",kind:"project",cats:["data","cloud"],img:"cdw",
+ meta:"개인 프로젝트, 2026.11 ~ 운영 중 · 강조 구간: 외부 데이터 연동과 자동 수집 · 대시보드는 혼자 만들었고, 이후 SeSAC 팀 최종 프로젝트 주제로 선정",
+ body:'<table><tbody><tr><th>담당 범위</th><td>API 연동 · 서버리스 중계 · 자동 수집 · 대시보드 · 배포 (전부 혼자)</td></tr><tr><th>기술</th><td>JavaScript, Node.js 서버리스 함수, Vercel(서울 리전), GitHub Actions, Cloudflare DNS</td></tr><tr><th>연동 데이터</th><td>인천국제공항공사 운항 현황, 한국공항공사 운항·노선(공공데이터포털), ADS-B 실시간 위치, METAR·TAF 기상, 콜사인 노선</td></tr></tbody></table>'+
+ '<div><h3>목표</h3><p>지금 인천공항에서 늦은 편 중 얼마가 앞 편에서 지연을 넘겨받았는지 실제 운항 자료로 보여 주고, 예측 모델 학습용 자료를 매일 끊기지 않게 쌓는 것.</p></div>'+
+ '<div><h3>수행</h3><ul><li>외부 API를 서버리스 중계 함수 6개로 감싸 인증키는 서버 환경 변수에만 두고 브라우저에 노출하지 않음</li><li>GitHub Actions로 하루 두 번 전날 운항·기상 자료를 별도 브랜치에 자동 저장 (API가 3일 전까지만 조회돼 누락 시 수동 보충 경로 마련)</li><li>대시보드: 지연 전파 비율, 남은 편 예상 지연(앞 편 도착 + 최소 지상 시간 50분), 지연 원인·버퍼 분석</li></ul></div>'+
+ '<div><h3>문제 → 개선</h3><table><tbody><tr><th>인증 오류</th><td>공공데이터포털이 HTTP 200을 돌려주면서 인증 오류는 응답 본문에만 담아 보내, 실패가 성공처럼 보였습니다. → 응답 본문의 오류 코드(게이트웨이 헤더, resultCode)를 확인하도록 바꿔 원인을 드러냈고, 키 값은 출력하지 않는 진단 모드로 보니 저장된 키가 여러 번 인코딩돼 있었습니다. → 키를 원래 형태로 정규화한 뒤 한 번만 인코딩해 요청하도록 수정</td></tr><tr><th>위치 데이터 끊김</th><td>ADS-B 소스 하나가 응답하지 않으면 지도가 비었습니다. → 소스 3곳에 동시에 요청하고, 실패하면 요청 제한 안에서 순서대로 재시도</td></tr></tbody></table></div>'+
+ '<div><h3>결과</h3><p>실시간 대시보드를 개인 도메인으로 배포하고, 매일 자료 자동 수집을 운영 중입니다. 남은 편 예상 지연은 아직 단순 계산이라, 쌓은 자료로 모델을 학습하는 것이 다음 단계입니다.</p></div>',
+ links:[["사이트","https://flight.kimchaeyeon.dev/airport"],["GitHub 저장소","https://github.com/k1mchaeyeon/icn-flight-delay-watch"]]},
+{id:"seoul",nm:"공공 데이터 5종 통합 및 데이터 분석",ds:"서울 20·30대 순이동: '청년'으로 묶으면 가려지는 차이를 데이터로 확인",dt:"2026.08",kind:"project",cats:["data"],img:"seoul1",
+ meta:"개인 프로젝트, 2026.08 · 강조 구간: 서로 다른 기준의 데이터를 하나로 통합·정제",
+ body:'<table><tbody><tr><th>담당 범위</th><td>수집 · 전처리 · 지표 설계 · 분석 · 시각화 · 대시보드 (전부 혼자)</td></tr><tr><th>기술</th><td>Python, pandas, matplotlib, Streamlit, Plotly(웹 버전)</td></tr><tr><th>데이터</th><td>국내인구이동, 주민등록인구, 전월세 실거래, 사업체조사, 지역별고용조사 (2021–2024, 25개 자치구)</td></tr></tbody></table>'+
+ '<div><h3>목표</h3><p>"30대 순유출이 가장 많다"와 "2030이 서울로 들어온다"는 엇갈린 기사를, 연령대를 나눠 공공 데이터로 확인하는 것.</p></div>'+
+ '<div><h3>문제 → 개선 (데이터 통합)</h3><ul><li>구마다 인구가 달라 순이동 인원으로는 비교가 안 됨 → 주민등록인구를 붙여 인구 1,000명당 순이동률로 통일</li><li>전세와 월세의 금액 기준이 다름 → 보증금 + 월세×12÷0.05로 전세 환산 후 자치구 중앙값</li><li>사업체 종사자수만으로는 주민의 고용 상태를 알 수 없음 → 거주지 고용률을 참고지표로 추가 (연령 구간 불일치는 명시)</li><li>최종: 5종 자료를 25개 구 × 4년 = 100행 하나의 표로 통합</li></ul></div>'+
+ '<div class="d-nums"><div><strong>+36,561명</strong><span>2024년 20대 순유입</span></div><div><strong>−26,224명</strong><span>2024년 30대 순유출</span></div><div><strong>18개 구</strong><span>20대 유입 · 30대 유출</span></div></div>'+
+ '<div><h3>결과</h3><table><tbody><tr><th>20대와 30대는 방향이 다를 것</th><td>지지</td></tr><tr><th>주거비가 높을수록 30대 순이동률이 낮을 것</th><td>지지되지 않음 (반대 방향, r = 0.625)</td></tr><tr><th>고용 여건이 좋을수록 20대 순이동률이 높을 것</th><td>부분 지지 (r = 0.620)</td></tr></tbody></table><p style="color:var(--muted);font-size:13px;margin-top:6px">상관관계는 개인의 이사 원인을 뜻하지 않는다는 한계를 함께 정리했습니다.</p></div>',
  links:[["사이트","https://seoul.kimchaeyeon.dev"],["GitHub 저장소","https://github.com/k1mchaeyeon/seoul-2030-migration-analysis"]]},
-{id:"morphing",nm:"(주)모핑아이 현장실습",ds:"150mm 상수도관 탐사 로봇 두 대의 통신·관제 SW와 테스트 절차 개발",dt:"2026.02",kind:"career",cats:["ai"],img:"robot",
- meta:"AI & 로봇 융합연구소, 2025.12 – 2026.02",
- body:'<p>싱가포르 현지 배관 실증에 쓸 소구경(150mm) 상수도관 탐사 로봇의 소프트웨어를 맡았습니다. 관절형 로봇 A(Raspberry Pi Zero 2W + Arduino/STM32)와 소형 로봇 B(Raspberry Pi 단독) 두 대입니다.</p>'+
- '<div><h3>제가 만든 것</h3><ul><li>Python asyncio 기반 관제 구조: 관제 PC(Control Station)와 로봇(Mobile Agent)을 나누고, 제어 명령은 TCP, 영상·음향·센서 데이터는 UDP로 분리</li><li>영상 경로: 카메라 2대(1920×1080) 프레임을 JPEG로 인코딩해 UDP로 보내고, 패킷이 빠지면 재전송 없이 다음 프레임을 처리해 지연을 줄임</li><li>펌웨어 시리얼 통신 모듈: 헤더·명령 ID·페이로드·체크섬 구조의 패킷을 설계해 LED·서보·BLDC 모터 제어, 펌웨어 수신 버퍼(64바이트)에 맞춰 경량화</li><li>바뀐 값만 펌웨어로 보내는 차분 전송, IMU(MPU-9250) 자세값·하이드로폰 음향 수집</li><li>요구사항·아키텍처·모듈 상세설계 문서와 로봇별 테스트 계획·절차서 작성(FPS, 지연, 패킷 손실률 합격 기준 정의)</li><li>센서 데이터와 SW 인터페이스 연동 테스트, 오류 로그 분석으로 하드웨어/소프트웨어 원인 구분</li><li>로봇 제어 API 명세서 작성, 정부 과제 기술제안서 대응</li></ul></div>'+
- '<div><h3>이후</h3><p>실습 중 개발한 소프트웨어는 실습이 끝난 뒤 회사에서 업그레이드를 거쳐 실제 현장 탐사 로봇에 적용됐고, 이 로봇이 관로 안 55m까지 들어갔습니다.</p></div>',
- links:[]},
+{id:"logiiq",nm:"AI 모델·LLM 데이터 연동 구조 설계",ds:"LogiIQ: YOLOv8 감지와 GPT 캐릭터를 붙인 3D 물류 교육 플랫폼 (졸업작품)",dt:"2025.06",kind:"project",cats:["ai","team"],img:"logiiq",
+ meta:"졸업작품, 2024.09 – 2025.06, 4명 · 강조 구간: 서로 다른 시스템 간 데이터 연동과 비전 모델 학습 데이터",
+ body:'<table><tbody><tr><th>담당 범위</th><td>Unity · Python(YOLO) · React 연동 구조 설계, YOLOv8 학습 데이터 구축과 학습, ChatGPT API 연동, 일정 관리</td></tr><tr><th>기술</th><td>Python(YOLOv8), ChatGPT API, Unity(C#) WebGL, React, Spring Boot, MariaDB</td></tr></tbody></table>'+
+ '<div><h3>목표</h3><p>글과 영상으로 익히기 어려운 물류 공정을 웹 3D 물류센터에서 직접 해 보며 익히게 하는 것. 3D 시뮬레이션, 객체 감지, AI 캐릭터, 학습 대시보드가 한 흐름으로 데이터를 주고받아야 했습니다.</p></div>'+
+ '<div><h3>수행</h3><ul><li><span class="mine">Unity WebGL ↔ Python(YOLOv8) ↔ React · Spring Boot 사이 데이터 연동 구조 설계</span></li><li>YOLOv8 학습 데이터 약 1만 5천 장 라벨링 · 증강(비정형 이미지 → 학습용 정형 라벨), 모델 학습</li><li>A* 경로 탐색에 YOLO 장애물 감지 결과를 넣어 AGV 자율주행</li><li>ChatGPT API로 학습자 질문 답변 · 미션 안내 AI 캐릭터 연동</li></ul></div>'+
+ '<div><h3>문제 → 개선</h3><p>처음에는 VR로 시작했지만 팀 모두 VR 개발이 처음이라 구현에 시간이 몰려 교육 내용을 손대지 못했습니다. 목표는 초보자의 공정 이해이고 VR은 수단이라고 보고 웹 3D로 바꿨고, 아낀 시간을 YOLO 감지와 AI 캐릭터에 썼습니다.</p></div>'+
+ '<div class="d-nums"><div><strong>42 → 85점</strong><span>초보 학습자 5명 평균 점수</span></div><div><strong>100%</strong><span>사용자 테스트 작업 성공률</span></div></div>'+
+ '<div><h3>결과</h3><p>국제학술지 IJIBC 논문(제2저자, 데이터 연동 구조와 기술적 타당성 검증), IIBC 우수논문상, 2025 창업발명공모전 은상. AI 캐릭터가 프로젝트 정보 없이 답해 엉뚱한 답을 하던 한계가 이후 RAG 검색 프로젝트의 출발점이 됐습니다.</p></div>',
+ links:[["시연 영상","https://youtu.be/GlBnGxDe_Iw"]]},
+{id:"assac",nm:"클라우드 보안 로그 수집·알림 파이프라인",ds:"ASSAC: Spring PetClinic AWS 3-Tier 운영 환경, 엣지·보안과 차단 알림 담당",dt:"2026.10",kind:"project",cats:["cloud","team"],img:"assac",
+ meta:"SeSAC 중간 프로젝트, 2026.09 – 2026.10, 5명 · 강조 구간: 로그 수집 → 가공 → 알림 자동화",
+ body:'<table><tbody><tr><th>담당 범위</th><td>Route 53, CloudFront, WAF, ACM, 차단 알림 Lambda, 담당 리소스 Terraform 코드화</td></tr><tr><th>기술</th><td>AWS(Route 53, CloudFront, WAF, ACM, Lambda, CloudWatch Logs), Terraform, Discord</td></tr></tbody></table>'+
+ '<div><h3>목표</h3><p>동물병원 진료 서비스를 요청이 VPC에 들어오기 전에 먼저 검사하고, 차단이나 이상이 생기면 사람이 로그를 찾기 전에 시스템이 먼저 알리도록 만드는 것.</p></div>'+
+ '<div><h3>수행</h3><ul><li><span class="mine">WAF 차단 로그 → CloudWatch Logs 구독 필터 → Lambda(IP · 국가 · URI 추출) → Discord 알림</span>. 지표 경보 · 서버 증감 · GuardDuty 탐지도 Lambda가 정리해 Discord로 전달</li><li>WAF 관리형 규칙(일반 웹 공격, SQL Injection)과 IP당 5분 1,000건 요청 제한, 초과 시 직접 만든 429 안내 페이지</li><li>assac.cloud → CloudFront 연결, ACM으로 원본까지 HTTPS, 외부 ALB는 CloudFront 전용 IP만 허용</li></ul></div>'+
+ '<div><h3>문제 → 개선</h3><p>7일간 CloudFront 요청 46,703건 중 캐시 응답은 16건(0.03%)이었습니다. 원인은 모든 경로가 캐시하지 않는 기본 동작 하나로 묶여 있고 응답에 Cache-Control 헤더가 없던 것. → 정적 경로는 1시간, 버전이 붙은 /webjars는 24시간, 동적 화면은 캐시 안 함으로 나누고, 바꾸기 전 설정은 JSON으로 백업 → 적용 후 정적 경로 6곳이 두 번째 요청부터 캐시로 응답.</p></div>'+
+ '<div class="d-nums"><div><strong>212,565 / 42,212</strong><span>WAF 허용 / 차단 (14일)</span></div><div><strong>0.03% → 캐시 응답</strong><span>정적 경로 캐시 적중</span></div><div><strong>4팀 중 1위</strong><span>과정 내 최종 발표 (팀)</span></div></div>'+
+ '<div><h3>결과와 남은 질문</h3><p>팀 결과로 부하 테스트 시간당 최대 18,735건 처리 중 p99 513ms를 유지했습니다. 알림은 자동으로 오지만 실제 공격인지 정상 사용자가 몰린 것인지는 결국 사람이 로그를 열어 판단해야 했고, 운영 로그를 AI로 먼저 해석하는 방법을 더 공부하고 싶은 이유가 됐습니다.</p></div>',
+ links:[["사이트","https://assac.kimchaeyeon.dev"],["인프라 지도","https://notes.kimchaeyeon.dev/assac-infra-map/"]]},
+{id:"morphing",nm:"실시간 원격 관제 통신 구조 설계·구현",ds:"(주)모핑아이 현장실습: 150mm 상수도관 탐사 로봇 두 대의 통신·관제 SW",dt:"2026.02",kind:"career",cats:["ai","cloud"],img:"robot",
+ meta:"(주)모핑아이 AI & 로봇 융합연구소, 2025.12 – 2026.02 · 강조 구간: 장비 ↔ 관제 서버 실시간 데이터 전송",
+ body:'<table><tbody><tr><th>담당 범위</th><td>관제 통신 구조, 펌웨어 시리얼 통신, 센서·영상·음향 수집, 설계 문서와 테스트 절차</td></tr><tr><th>기술</th><td>Python asyncio, TCP/UDP 소켓, UART 시리얼, Raspberry Pi, OpenCV(JPEG), MPU-9250 IMU, 하이드로폰</td></tr></tbody></table>'+
+ '<div><h3>목표</h3><p>싱가포르 현지 배관 실증에 쓸 소구경(150mm) 상수도관 탐사 로봇 두 대(관절형 A, 소형 B)에서 영상·음향·자세 데이터를 관제 PC로 실시간 전송하고 원격으로 제어하는 것.</p></div>'+
+ '<div><h3>수행</h3><ul><li><span class="mine">Python asyncio 기반 관제 구조: 관제 PC(Control Station)와 로봇(Mobile Agent)을 나누고, 제어 명령은 신뢰성 있는 TCP, 영상·음향·센서는 지연이 적은 UDP로 분리</span></li><li>카메라 2대(1920×1080) 프레임을 JPEG로 인코딩해 UDP로 전송, 패킷이 빠지면 재전송 없이 다음 프레임을 처리해 지연을 줄임</li><li>펌웨어 시리얼 패킷(헤더 · 명령 ID · 페이로드 · 체크섬) 설계, 수신 버퍼 64바이트에 맞춰 경량화</li><li>바뀐 값만 펌웨어로 보내는 차분 전송, IMU 자세값 · 하이드로폰 음향 수집</li><li>요구사항 · 아키텍처 · 모듈 상세설계 문서, 로봇별 테스트 계획 · 절차서(FPS, 지연, 패킷 손실률 합격 기준), 제어 API 명세서</li></ul></div>'+
+ '<div><h3>결과</h3><p>실습 중 개발한 소프트웨어는 실습이 끝난 뒤 회사에서 업그레이드를 거쳐 실제 현장 탐사 로봇에 적용됐고, 이 로봇이 관로 안 55m까지 들어갔습니다.</p></div>',links:[]},
 {id:"sesac",nm:"SeSAC 클라우드 데이터 엔지니어 과정",ds:"Linux, AWS, SQL, Python 데이터 분석",dt:"2026",kind:"career",cats:["cloud","data"],img:"sesac",
  meta:"청년취업사관학교, 베스핀글로벌 연계, 2026년 진행 중",
  body:'<p>데이터 분석 스터디, 리눅스, AWS 수업을 거쳐 중간 프로젝트 ASSAC을 진행했습니다. 프로젝트를 마친 뒤 10월 중순부터 수업을 이어 듣고 있습니다.</p>',links:[]},
